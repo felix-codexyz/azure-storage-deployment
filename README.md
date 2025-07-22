@@ -122,6 +122,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.7.5
+          cli_config_credentials_token: ${{ secrets.TFC_API_TOKEN }}
 
       - name: Terraform Init
         run: terraform init
@@ -138,8 +139,8 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-      TF_VAR_storage_account_name: ${{ secrets.TF_VAR_storage_account_name }}
-      TF_VAR_location: ${{ secrets.TF_VAR_location }}
+      TF_VAR_storage_account_name: ${{ vars.TF_VAR_storage_account_name }}
+      TF_VAR_location: ${{ vars.TF_VAR_location }}
 ```
 
 ---
