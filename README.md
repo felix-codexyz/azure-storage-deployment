@@ -255,5 +255,3 @@ output "storage_account_id" {
 3. Change `location` to `australiaeast` → PR → should fail apply due to region restriction
 
 ---
-
-Let me know if you want a downloadable ZIP version of the full repo. ✅
