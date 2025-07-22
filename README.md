@@ -22,7 +22,7 @@ azure-storage-deployment/
 ├── main.tf                     # Root Terraform config - calls storage_account module
 ├── variables.tf                # Root input variables
 ├── versions.tf                 # Terraform and provider version config
-├── terraform.tfvars           # Variable values (except secrets)
+├── terraform.tfvars            # Variable values (except secrets)
 └── README.md                   # Project documentation
 ```
 
