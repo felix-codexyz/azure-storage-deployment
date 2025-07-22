@@ -1,5 +1,5 @@
 module "storage" {
   source               = "./modules/storage_account"
-  storage_account_name = "azurestoragespz123456"
-  location             = "australiaeast"  # Hardcoded for testing
+  storage_account_name = var.storage_account_name
+  location             = var.location
 }
