@@ -1,3 +1,8 @@
+# ADD THIS OUTPUT AT THE TOP:
+output "module_received_location" {
+  value = var.location
+}
+
 resource "azurerm_resource_group" "rg" {
   name     = "rg-demo-storage"
   location = var.location
