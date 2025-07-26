@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - 'feature/**'  # This will trigger on pushes to any feature branch
   pull_request:
     branches:
       - main
@@ -21,7 +22,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.7.5
-          cli_config_credentials_token: ${{ secrets.TFC_API_TOKEN }} # Optional, if using Terraform Cloud
+          cli_config_credentials_token: ${{ secrets.TFC_API_TOKEN }} # Optional if using Terraform Cloud
 
       - name: Terraform Init
         run: terraform init
