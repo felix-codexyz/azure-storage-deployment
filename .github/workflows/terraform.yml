@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - 'feature/**'  # This will trigger on pushes to any feature branch
   pull_request:
     branches:
       - main
