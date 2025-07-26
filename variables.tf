@@ -4,5 +4,5 @@ variable "storage_account_name" {
 
 variable "location" {
   type = string
-  default = "eastus"
+  default = "australiaeast"
 }

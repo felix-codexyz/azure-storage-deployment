@@ -256,3 +256,4 @@ output "storage_account_id" {
 3. Change `location` to `australiaeast` → PR → should fail apply due to region restriction
 
 ---
+END
