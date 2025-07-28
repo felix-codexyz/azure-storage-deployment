@@ -9,7 +9,6 @@ Deploy an Azure Storage Account using Terraform via Terraform Cloud (CLI-Driven 
 ---
 
 ## 📦 Repository Structure
-
 ```bash
 azure-storage-deployment/
 ├── .github/
