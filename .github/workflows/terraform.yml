@@ -12,7 +12,7 @@ on:
 jobs:
   terraform:
     name: Terraform Plan & Apply
-    runs-on: Azure-Storage-Runner-1
+    runs-on: self-hosted
 
     steps:
       - name: Checkout Code
