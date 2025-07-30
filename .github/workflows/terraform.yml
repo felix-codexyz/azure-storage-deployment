@@ -12,7 +12,7 @@ on:
 jobs:
   terraform:
     name: Terraform Plan & Apply
-    runs-on: ubuntu-latest
+    runs-on: Azure-Storage-Runner-1
 
     steps:
       - name: Checkout Code
