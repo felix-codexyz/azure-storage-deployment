@@ -22,7 +22,7 @@ jobs:
       TF_VAR_location: ${{ vars.TF_VAR_location }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       REPO: ${{ github.repository }}
-      HEAD_BRANCH: ${{ github.ref_name }}
+      HEAD_BRANCH: ${{ github.head_ref || github.ref_name }}
       GH_PAT: ${{ secrets.GH_PAT }}
 
     steps:
@@ -45,6 +45,12 @@ jobs:
       - name: Create Pull Request and Add Reviewers using GitHub API
         if: success()
         run: |
+          echo "🔍 Debug Info:"
+          echo "Detected HEAD_BRANCH: $HEAD_BRANCH"
+          echo "Triggering Event: $GITHUB_EVENT_NAME"
+          echo "GitHub Ref: $GITHUB_REF"
+          echo "GitHub Ref Name: $GITHUB_REF_NAME"
+          echo "GitHub Head Ref: $GITHUB_HEAD_REF"
           echo "Creating Pull Request via API..."
 
           # Build the JSON body for the pull request
