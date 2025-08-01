@@ -33,7 +33,7 @@ azure-storage-deployment/
 # Step 1: Create repo on GitHub (name: azure-storage-deployment)
 # ✅ Check the "Initialize with README" and ".gitignore -> Terraform"
 
-# Step 2: Clone the repo locally
+# Step 2: Clone the repo locally:
 $ git clone https://github.com/<your-username>/azure-storage-deployment.git
 $ cd azure-storage-deployment
 
