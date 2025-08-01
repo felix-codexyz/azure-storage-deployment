@@ -23,6 +23,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       REPO: ${{ github.repository }}
       HEAD_BRANCH: ${{ github.ref_name }}
+      GH_PAT: ${{ secrets.GH_PAT }}
 
     steps:
       - name: Checkout Code
@@ -56,7 +57,7 @@ jobs:
 
           # Create the Pull Request
           PR_RESPONSE=$(curl -s -X POST \
-            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Authorization: Bearer $GH_PAT" \
             -H "Accept: application/vnd.github+json" \
             https://api.github.com/repos/$REPO/pulls \
             -d "$PR_PAYLOAD")
@@ -80,7 +81,7 @@ jobs:
             '{reviewers: ["felix-081", "spz-technologies"]}')
 
           curl -s -X POST \
-            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Authorization: Bearer $GH_PAT" \
             -H "Accept: application/vnd.github+json" \
             https://api.github.com/repos/$REPO/pulls/$PR_NUMBER/requested_reviewers \
             -d "$REVIEWER_PAYLOAD"
