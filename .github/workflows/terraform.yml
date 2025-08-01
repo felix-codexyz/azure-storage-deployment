@@ -43,7 +43,7 @@ jobs:
         run: terraform plan
 
       - name: Create Pull Request and Add Reviewers using GitHub API
-        if: success()
+        if: github.event_name == 'push' && success()
         run: |
           echo "🔍 Debug Info:"
           echo "Detected HEAD_BRANCH: $HEAD_BRANCH"
