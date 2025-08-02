@@ -4,17 +4,15 @@ on:
   push:
     branches:
       - 'feature/**'
-      - main
+      - 'main'
   pull_request:
     branches:
       - main
 
 jobs:
-  terraform_plan:
-    name: Terraform Plan & PR via API
-    runs-on: ubuntu-latest
-
-    if: startsWith(github.ref, 'refs/heads/feature/') || github.event_name == 'pull_request'
+  terraform:
+    name: Terraform Plan or Apply
+    runs-on: Azure-Storage-Runner-1  # Change to ubuntu-latest if not using self-hosted
 
     env:
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
@@ -42,20 +40,13 @@ jobs:
         run: terraform init
 
       - name: Terraform Plan
-        id: plan
+        if: startsWith(github.ref, 'refs/heads/feature/')
         run: terraform plan
 
-      - name: Create Pull Request and Add Reviewers using GitHub API
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/feature/')
+      - name: Create Pull Request and Add Reviewers
+        if: startsWith(github.ref, 'refs/heads/feature/') && success()
         run: |
-          echo "🔍 Debug Info:"
-          echo "Detected HEAD_BRANCH: $HEAD_BRANCH"
-          echo "Triggering Event: $GITHUB_EVENT_NAME"
-          echo "GitHub Ref: $GITHUB_REF"
-          echo "GitHub Ref Name: $GITHUB_REF_NAME"
-          echo "GitHub Head Ref: $GITHUB_HEAD_REF"
-          echo "Creating Pull Request via API..."
-
+          echo "🔍 Detected HEAD_BRANCH: $HEAD_BRANCH"
           PR_PAYLOAD=$(jq -n \
             --arg title "Terraform changes from $HEAD_BRANCH" \
             --arg head "$HEAD_BRANCH" \
@@ -70,8 +61,8 @@ jobs:
             -d "$PR_PAYLOAD")
 
           echo "Response: $PR_RESPONSE"
-          PR_NUMBER=$(echo "$PR_RESPONSE" | jq '.number')
 
+          PR_NUMBER=$(echo "$PR_RESPONSE" | jq '.number')
           if [ "$PR_NUMBER" = "null" ] || [ -z "$PR_NUMBER" ]; then
             echo "❌ Failed to create PR. Exiting..."
             exit 1
@@ -79,8 +70,8 @@ jobs:
 
           echo "✅ Pull Request #$PR_NUMBER created."
 
-          echo "Requesting review from felix-081 and spz-technologies..."
-          REVIEWER_PAYLOAD=$(jq -n '{reviewers: ["felix-081", "spz-technologies"]}')
+          REVIEWER_PAYLOAD=$(jq -n \
+            '{reviewers: ["felix-081", "spz-technologies"]}')
 
           curl -s -X POST \
             -H "Authorization: Bearer $GH_PAT" \
@@ -88,56 +79,6 @@ jobs:
             https://api.github.com/repos/$REPO/pulls/$PR_NUMBER/requested_reviewers \
             -d "$REVIEWER_PAYLOAD"
 
-
-  terraform_apply:
-    name: Terraform Apply on Merge to Main
-    runs-on: ubuntu-latest
-    if: github.ref_name == 'main' && github.event_name == 'push'
-    needs: terraform_plan
-
-    env:
-      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-      TF_VAR_storage_account_name: ${{ vars.TF_VAR_storage_account_name }}
-      TF_VAR_location: ${{ vars.TF_VAR_location }}
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.7.5
-          cli_config_credentials_token: ${{ secrets.TFC_API_TOKEN }}
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Apply
+      - name: Terraform Apply (only on main)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
