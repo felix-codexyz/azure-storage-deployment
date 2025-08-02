@@ -7,9 +7,9 @@ terraform {
   }
 
   cloud {
-    organization = "felfun-spz-technologies-azure-platform"
+    organization = "SuccPinnSolutions"
     workspaces {
-      name = "azure-storage-workspace"
+      name = "azure-storage-deploy-workspace"
     }
   }
 }

@@ -33,7 +33,7 @@ azure-storage-deployment/
 # Step 1: Create repo on GitHub (name: azure-storage-deployment)
 # ✅ Check the "Initialize with README" and ".gitignore -> Terraform"
 
-# Step 2: Clone the repo locally
+# Step 2: Clone the repo locally:
 $ git clone https://github.com/<your-username>/azure-storage-deployment.git
 $ cd azure-storage-deployment
 
@@ -51,7 +51,7 @@ $ git push origin main
 
 ---
 
-## 🔐 2. Create Azure Service Principal for Terraform Auth
+## 🔐 2. Create Azure Service Principal for Terraform Auth.
 ```bash
 # Login to Azure
 az login
