@@ -88,10 +88,11 @@ jobs:
             https://api.github.com/repos/$REPO/pulls/$PR_NUMBER/requested_reviewers \
             -d "$REVIEWER_PAYLOAD"
 
+
   terraform_apply:
     name: Terraform Apply on Merge to Main
     runs-on: Azure-Storage-Runner-1
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref_name == 'main' && github.event_name == 'push'
     needs: terraform_plan
 
     env:
@@ -101,7 +102,6 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
       TF_VAR_storage_account_name: ${{ vars.TF_VAR_storage_account_name }}
       TF_VAR_location: ${{ vars.TF_VAR_location }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout Code
@@ -117,4 +117,27 @@ jobs:
         run: terraform init
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform apply 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
