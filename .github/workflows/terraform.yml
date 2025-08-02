@@ -3,15 +3,18 @@ name: Deploy Azure Storage
 on:
   push:
     branches:
-      - 'feature/**'  # Only feature branches
+      - 'feature/**'
+      - main
   pull_request:
     branches:
       - main
 
 jobs:
-  terraform:
+  terraform_plan:
     name: Terraform Plan & PR via API
     runs-on: ubuntu-latest
+
+    if: startsWith(github.ref, 'refs/heads/feature/') || github.event_name == 'pull_request'
 
     env:
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
@@ -43,7 +46,7 @@ jobs:
         run: terraform plan
 
       - name: Create Pull Request and Add Reviewers using GitHub API
-        if: github.event_name == 'push' && success()
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/feature/')
         run: |
           echo "🔍 Debug Info:"
           echo "Detected HEAD_BRANCH: $HEAD_BRANCH"
@@ -53,7 +56,6 @@ jobs:
           echo "GitHub Head Ref: $GITHUB_HEAD_REF"
           echo "Creating Pull Request via API..."
 
-          # Build the JSON body for the pull request
           PR_PAYLOAD=$(jq -n \
             --arg title "Terraform changes from $HEAD_BRANCH" \
             --arg head "$HEAD_BRANCH" \
@@ -61,7 +63,6 @@ jobs:
             --arg body "This PR includes infrastructure changes from a successful Terraform plan." \
             '{title: $title, head: $head, base: $base, body: $body}')
 
-          # Create the Pull Request
           PR_RESPONSE=$(curl -s -X POST \
             -H "Authorization: Bearer $GH_PAT" \
             -H "Accept: application/vnd.github+json" \
@@ -69,8 +70,6 @@ jobs:
             -d "$PR_PAYLOAD")
 
           echo "Response: $PR_RESPONSE"
-
-          # Extract the PR number
           PR_NUMBER=$(echo "$PR_RESPONSE" | jq '.number')
 
           if [ "$PR_NUMBER" = "null" ] || [ -z "$PR_NUMBER" ]; then
@@ -80,14 +79,42 @@ jobs:
 
           echo "✅ Pull Request #$PR_NUMBER created."
 
-          # Add reviewers
           echo "Requesting review from felix-081 and spz-technologies..."
-
-          REVIEWER_PAYLOAD=$(jq -n \
-            '{reviewers: ["felix-081", "spz-technologies"]}')
+          REVIEWER_PAYLOAD=$(jq -n '{reviewers: ["felix-081", "spz-technologies"]}')
 
           curl -s -X POST \
             -H "Authorization: Bearer $GH_PAT" \
             -H "Accept: application/vnd.github+json" \
             https://api.github.com/repos/$REPO/pulls/$PR_NUMBER/requested_reviewers \
             -d "$REVIEWER_PAYLOAD"
+
+  terraform_apply:
+    name: Terraform Apply on Merge to Main
+    runs-on: Azure-Storage-Runner-1
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: terraform_plan
+
+    env:
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      TF_VAR_storage_account_name: ${{ vars.TF_VAR_storage_account_name }}
+      TF_VAR_location: ${{ vars.TF_VAR_location }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+          cli_config_credentials_token: ${{ secrets.TFC_API_TOKEN }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
