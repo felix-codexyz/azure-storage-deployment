@@ -91,7 +91,7 @@ jobs:
 
   terraform_apply:
     name: Terraform Apply on Merge to Main
-    runs-on: Azure-Storage-Runner-1
+    runs-on: ubuntu-latest
     if: github.ref_name == 'main' && github.event_name == 'push'
     needs: terraform_plan
 
