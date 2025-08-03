@@ -41,7 +41,7 @@ $ cd azure-storage-deployment
 $ mkdir -p .github/workflows
 $ mkdir -p modules/storage_account
 
-# Step 4: Add all Terraform and GitHub Actions files (see below).
+# Step 4: Add all Terraform and GitHub Actions files (see below)
 
 # Step 5: Push code
 $ git add .
