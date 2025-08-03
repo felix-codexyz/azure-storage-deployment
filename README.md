@@ -51,7 +51,7 @@ $ git push origin main
 
 ---
 
-## 🔐 2. Create Azure Service Principal for Terraform Auth
+## 🔐 2. Create Azure Service Principal for Terraform Auth.
 ```bash
 # Login to Azure
 az login
