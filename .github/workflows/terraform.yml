@@ -12,7 +12,7 @@ on:
 jobs:
   terraform:
     name: Terraform Plan or Apply
-    runs-on: [Azure-Storage-Runner-1, self-hosted, Linux, X64]  # Change to ubuntu-latest if not using self-hosted
+    runs-on: aws-ephemeral-runner  # Change to ubuntu-latest if not using self-hosted
 
     env:
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
