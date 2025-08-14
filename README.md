@@ -30,6 +30,7 @@ azure-storage-deployment/
 ---
 
 ## 🧱 1. Create GitHub Repo & Push Code
+
 ```bash
 # Step 1: Create repo on GitHub (name: azure-storage-deployment)
 # ✅ Check the "Initialize with README" and ".gitignore -> Terraform"
